@@ -245,18 +245,22 @@ extern "C" fn become_first_responder(this: &Object, _sel: Sel) -> BOOL {
     let state = unsafe { WindowState::from_view(this) };
     let is_key_window = unsafe {
         let window: id = msg_send![this, window];
-        let is_key_window: BOOL = msg_send![window, isKeyWindow];
-        is_key_window == YES
+        if window != nil {
+            let is_key_window: BOOL = msg_send![window, isKeyWindow];
+            is_key_window == YES
+        } else {
+            false
+        }
     };
     if is_key_window {
-        state.trigger_event(Event::Window(WindowEvent::Focused));
+        state.trigger_deferrable_event(Event::Window(WindowEvent::Focused));
     }
     YES
 }
 
 extern "C" fn resign_first_responder(this: &Object, _sel: Sel) -> BOOL {
     let state = unsafe { WindowState::from_view(this) };
-    state.trigger_event(Event::Window(WindowEvent::Unfocused));
+    state.trigger_deferrable_event(Event::Window(WindowEvent::Unfocused));
     YES
 }
 
@@ -346,8 +350,6 @@ extern "C" fn view_will_move_to_window(this: &Object, _self: Sel, new_window: id
     unsafe {
         let tracking_areas: *mut Object = msg_send![this, trackingAreas];
         let tracking_area_count = NSArray::count(tracking_areas);
-
-        let _: () = msg_send![class!(NSEvent), setMouseCoalescingEnabled: NO];
 
         if new_window == nil {
             if tracking_area_count != 0 {
