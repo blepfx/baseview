@@ -138,6 +138,10 @@ impl GlContext {
             let _: () = msg_send![self.view, setNeedsDisplay: YES];
         }
     }
+
+    pub(crate) fn ns_view(&self) -> id {
+        self.view
+    }
 }
 
 impl Drop for GlContext {

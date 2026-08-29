@@ -172,6 +172,8 @@ unsafe fn create_view_class() -> &'static Class {
         sel!(viewWillMoveToWindow:),
         view_will_move_to_window as extern "C" fn(&Object, Sel, id),
     );
+
+    class.add_method(sel!(hitTest:), hit_test as extern "C" fn(&Object, Sel, NSPoint) -> id);
     class.add_method(
         sel!(updateTrackingAreas:),
         update_tracking_areas as extern "C" fn(&Object, Sel, id),
@@ -344,6 +346,29 @@ unsafe fn reinit_tracking_area(this: &Object, tracking_area: *mut Object) {
         owner:this
         userInfo:nil
     ];
+}
+
+extern "C" fn hit_test(this: &Object, _sel: Sel, point: NSPoint) -> id {
+    let super_result: id = unsafe {
+        let superclass = msg_send![this, superclass];
+        msg_send![super(this, superclass), hitTest: point]
+    };
+
+    if super_result == nil {
+        return nil;
+    }
+
+    #[cfg(feature = "opengl")]
+    unsafe {
+        let state = WindowState::from_view(this);
+        if let Some(gl_context) = state.window_inner.gl_context.as_ref() {
+            if super_result == gl_context.ns_view() {
+                return this as *const _ as id;
+            }
+        }
+    }
+
+    super_result
 }
 
 extern "C" fn view_will_move_to_window(this: &Object, _self: Sel, new_window: id) {

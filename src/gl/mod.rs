@@ -112,4 +112,9 @@ impl GlContext {
     pub(crate) fn resize(&self, size: cocoa::foundation::NSSize) {
         self.context.resize(size);
     }
+
+    #[cfg(target_os = "macos")]
+    pub(crate) fn ns_view(&self) -> cocoa::base::id {
+        self.context.ns_view()
+    }
 }

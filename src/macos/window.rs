@@ -11,7 +11,7 @@ use cocoa::appkit::{
 use cocoa::base::{id, nil, BOOL, NO, YES};
 use cocoa::foundation::{NSAutoreleasePool, NSPoint, NSRect, NSSize, NSString};
 use core_foundation::runloop::{
-    CFRunLoop, CFRunLoopTimer, CFRunLoopTimerContext, __CFRunLoopTimer, kCFRunLoopDefaultMode,
+    __CFRunLoopTimer, kCFRunLoopDefaultMode, CFRunLoop, CFRunLoopTimer, CFRunLoopTimerContext,
 };
 use keyboard_types::KeyboardEvent;
 use objc::class;
@@ -66,7 +66,7 @@ pub(super) struct WindowInner {
     ns_view: id,
 
     #[cfg(feature = "opengl")]
-    gl_context: Option<GlContext>,
+    pub(super) gl_context: Option<GlContext>,
 }
 
 impl WindowInner {
