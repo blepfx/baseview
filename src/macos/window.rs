@@ -264,7 +264,7 @@ impl<'a> Window<'a> {
         let ns_view = window_inner.ns_view;
         let natural_scroll = unsafe {
             <id as NSUserDefaults>::standardUserDefaults()
-                .boolForKey_(NSString::alloc(nil).init_str("com.apple.swipescrolldirection"))
+                .bool_forKey_(NSString::alloc(nil).init_str("com.apple.swipescrolldirection"))
                 != 0
         };
 
