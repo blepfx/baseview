@@ -9,7 +9,7 @@ use cocoa::appkit::{
     NSPasteboard, NSView, NSWindow, NSWindowStyleMask,
 };
 use cocoa::base::{id, nil, BOOL, NO, YES};
-use cocoa::foundation::{NSAutoreleasePool, NSPoint, NSRect, NSSize, NSString};
+use cocoa::foundation::{NSAutoreleasePool, NSPoint, NSRect, NSSize, NSString, NSUserDefaults};
 use core_foundation::runloop::{
     __CFRunLoopTimer, kCFRunLoopDefaultMode, CFRunLoop, CFRunLoopTimer, CFRunLoopTimerContext,
 };
@@ -270,6 +270,10 @@ impl<'a> Window<'a> {
             frame_timer: Cell::new(None),
             window_info: Cell::new(window_info),
             deferred_events: RefCell::default(),
+            natural_scroll: unsafe {
+                NSUserDefaults::standardUserDefaults()
+                    .boolForKey_(NSString::alloc(nil).init_str("com.apple.swipescrolldirection"))
+            },
         });
 
         let window_state_ptr = Rc::into_raw(Rc::clone(&window_state));
@@ -371,6 +375,8 @@ pub(super) struct WindowState {
     frame_timer: Cell<Option<CFRunLoopTimer>>,
     /// The last known window info for this window.
     pub window_info: Cell<WindowInfo>,
+
+    pub natural_scroll: bool,
 
     /// Events that will be triggered at the end of `window_handler`'s borrow.
     deferred_events: RefCell<VecDeque<Event>>,

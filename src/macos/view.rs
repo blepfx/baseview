@@ -437,8 +437,13 @@ extern "C" fn scroll_wheel(this: &Object, _: Sel, event: id) {
     let state = unsafe { WindowState::from_view(this) };
 
     let delta = unsafe {
-        let x = NSEvent::scrollingDeltaX(event) as f32;
-        let y = NSEvent::scrollingDeltaY(event) as f32;
+        let mut x = -NSEvent::scrollingDeltaX(event) as f32;
+        let mut y = NSEvent::scrollingDeltaY(event) as f32;
+
+        if state.natural_scroll {
+            x = -x;
+            y = -y;
+        }
 
         if NSEvent::hasPreciseScrollingDeltas(event) != NO {
             ScrollDelta::Pixels { x, y }
