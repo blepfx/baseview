@@ -262,6 +262,11 @@ impl<'a> Window<'a> {
         let window_handler = Box::new(build(&mut window));
 
         let ns_view = window_inner.ns_view;
+        let natural_scroll = unsafe {
+            <id as NSUserDefaults>::standardUserDefaults()
+                .boolForKey_(NSString::alloc(nil).init_str("com.apple.swipescrolldirection"))
+                != 0
+        };
 
         let window_state = Rc::new(WindowState {
             window_inner,
@@ -270,10 +275,7 @@ impl<'a> Window<'a> {
             frame_timer: Cell::new(None),
             window_info: Cell::new(window_info),
             deferred_events: RefCell::default(),
-            natural_scroll: unsafe {
-                <id as NSUserDefaults>::standardUserDefaults()
-                    .boolForKey_(NSString::alloc(nil).init_str("com.apple.swipescrolldirection"))
-            },
+            natural_scroll,
         });
 
         let window_state_ptr = Rc::into_raw(Rc::clone(&window_state));
