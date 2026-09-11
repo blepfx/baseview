@@ -274,7 +274,7 @@ impl<'a> Window<'a> {
             frame_timer: Cell::new(None),
             window_info: Cell::new(window_info),
             deferred_events: RefCell::default(),
-            natural_scroll,
+            natural_scroll: natural_scroll != NO,
         });
 
         let window_state_ptr = Rc::into_raw(Rc::clone(&window_state));
