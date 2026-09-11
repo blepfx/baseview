@@ -271,7 +271,7 @@ impl<'a> Window<'a> {
             window_info: Cell::new(window_info),
             deferred_events: RefCell::default(),
             natural_scroll: unsafe {
-                NSUserDefaults::standardUserDefaults()
+                <id as NSUserDefaults>::standardUserDefaults()
                     .boolForKey_(NSString::alloc(nil).init_str("com.apple.swipescrolldirection"))
             },
         });
